@@ -420,9 +420,9 @@ for i,(b,l,c) in enumerate(steps):
 card(s, 0.6, 3.50, 5.55, 1.55)
 text(s, 0.85, 3.64, 5.0, 0.30, "EV/Sales 17倍の統計的導出", size=11.5, color=CY, bold=True)
 text(s, 0.85, 4.00, 5.35, 1.0,
-     [[("comps採用群 {Planet6・Synspective7・BlackSky10・Anduril14・Palantirプレ20}", MUT, False, 10.5)],
-      [("中央値10倍 ＋ ソフト+3／粗利+2／主権プレミアム+2 ＝ ", MUT, False, 10.5), ("17倍", GOLD, True, 10.5)],
-      [("Palantir現況60.7倍はバブル局面として明示除外", DIM, False, 10)]],
+     [[("“国しか客になれない国産インフラ”＝普通のソフトの約1.7倍の値札", CY, False, 10.5)],
+      [("comps中央値10倍 ＋ ソフト+3／粗利+2／主権+2 ＝ ", MUT, False, 10.5), ("17倍", GOLD, True, 10.5)],
+      [("Palantirプレ20・現況60.7倍はバブルとして除外", DIM, False, 10)]],
      line_spacing=1.18)
 # fund returner box
 card(s, 6.35, 3.50, 3.05, 1.55, fill=KMFILL, line=GOLD)
@@ -436,11 +436,11 @@ footer(s, 10, "出典：01前提パック §5・02財務モデル Exit/リター
 # =====================================================================
 s = slide()
 header(s, "PORTFOLIO ・ ポートフォリオ", "ネット3.0Xは分布で作る")
-keymsg(s, [("Solafune 206億 ＋ べき乗則10社 → ", WH, True),
+keymsg(s, [("実在2本（Solafune＋Humanity Brain）に厚く張り → ", WH, True),
            ("グロス4.3X → ネットDPI 3.0X", GOLD, True),
            ("（上位2社で回収の約65%）", WH, True)])
 # distribution table-ish cards
-rows=[("Solafune","★ FR（本命）",206,GOLD),("Humanity Brain","認知戦AI・7-8X｜実在",136,CY),
+rows=[("Solafune","★ FR（本命）",206,GOLD),("Humanity Brain","ニセ情報耐性AI・7-8X｜実在",136,CY),
       ("C・D","3-5X級2社",119,MUT),("E-G","1-2X級3社",43,DIM),
       ("H-J","0-1X級3社",20,DIM)]
 x=0.6; cw=1.70
@@ -461,7 +461,7 @@ for b,l,c in trio:
     x+=2.93
 text(s, 0.6, 4.66, 8.8, 0.40,
      [("DPI＝財布全体が何倍／MOIC＝この1社が何倍。", MUT, False, 11),
-      ("少数の当たりで勝つ＝VCのべき乗則を体現。", WH, True, 11)])
+      ("理想の薄い裾より、検証可能な実弾2本に厚く張る集中設計。", WH, True, 11)])
 footer(s, 11, "出典：02財務モデル「ポートフォリオ」シート（net DPI 2.995≈3.0X）")
 
 # =====================================================================

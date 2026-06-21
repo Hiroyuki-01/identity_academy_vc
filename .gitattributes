@@ -1,0 +1,9 @@
+# バイナリ成果物は自動マージ不可（事故防止）。編集は CONTRIBUTING.md §3 のロック運用で。
+*.xlsx binary merge=binary
+*.pptx binary merge=binary
+*.pdf  binary merge=binary
+*.png  binary
+*.docx binary merge=binary
+
+# Markdown は通常のテキスト扱い（行マージ可）
+*.md text
