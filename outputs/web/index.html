@@ -3,102 +3,443 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Solafune 投資ピッチ — プレビュー</title>
+<title>SENTINEL CAPITAL PARTNERS × Solafune ― 投資ピッチ</title>
 <style>
-:root{ --bg:#0b1020; --card:#121a31; --ink:#eaf0ff; --sub:#9fb0d6; --line:#26324f;
-  --accent:#5b8cff; }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:64px}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Segoe UI","Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;}
-header#top{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;
-  gap:14px;padding:0 20px;background:rgba(14,20,38,.92);backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line);z-index:50}
-header#top b{font-size:14px;letter-spacing:.02em}
-header#top .meta{color:var(--sub);font-size:12px}
-#prog{position:fixed;top:52px;left:0;height:3px;background:var(--accent);width:0;z-index:50}
-.layout{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:248px 1fr;
-  gap:30px;padding:80px 22px 90px}
-nav.toc{position:sticky;top:80px;align-self:start;max-height:calc(100vh - 110px);
-  overflow:auto;border:1px solid var(--line);border-radius:14px;padding:10px;background:#101830}
-.toc-title{font-size:11px;letter-spacing:.08em;color:var(--sub);padding:4px 8px 8px;text-transform:uppercase}
-.toc-link{display:flex;gap:8px;align-items:baseline;padding:6px 8px;border-radius:8px;
-  color:var(--sub);text-decoration:none;font-size:13px;line-height:1.35}
-.toc-link:hover{background:#1a2746;color:var(--ink)}
-.toc-link.active{background:#1a2746;color:#fff;box-shadow:inset 3px 0 0 var(--accent)}
-.toc-no{font-size:11px;color:#6f82ad;min-width:20px}
-.toc-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-main{min-width:0}
-.section{margin-bottom:30px;scroll-margin-top:64px}
-.sec-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
-.sec-no{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:6px;padding:1px 8px}
-.sec-title{font-size:15px;color:#dce6ff;font-weight:700}
-.section img{width:100%;height:auto;display:block;border:1px solid var(--line);
-  border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.4);background:#000}
-#toTop{position:fixed;right:18px;bottom:18px;z-index:50;background:#1a2746;color:var(--ink);
-  border:1px solid var(--line);border-radius:50%;width:44px;height:44px;font-size:18px;
-  cursor:pointer;opacity:0;transition:opacity .2s}
+:root{
+  --bg:#080d1c; --ink:#eef3ff; --mut:#9db0d0; --dim:#6c7da4;
+  --cy:#5bc8ff; --gold:#f5b454; --pur:#9c8cff;
+  --card:rgba(17,28,60,.66); --line:#2a3b66; --km:rgba(19,35,77,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI","Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* starfield background fixed behind everything */
+body::before{content:"";position:fixed;inset:0;z-index:-2;
+  background:
+   radial-gradient(1200px 700px at 78% -10%, rgba(91,200,255,.10), transparent 60%),
+   radial-gradient(900px 600px at 10% 110%, rgba(156,140,255,.10), transparent 60%),
+   linear-gradient(180deg,#070b18 0%,#0a1124 50%,#070b18 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;opacity:.5;
+  background-image:
+   radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+   radial-gradient(1px 1px at 60% 70%, #cfe3ff, transparent),
+   radial-gradient(1px 1px at 80% 20%, #fff, transparent),
+   radial-gradient(1px 1px at 35% 80%, #bcd2ff, transparent),
+   radial-gradient(1px 1px at 50% 50%, #fff, transparent),
+   radial-gradient(2px 2px at 90% 60%, #9fc3ff, transparent),
+   radial-gradient(1px 1px at 12% 65%, #fff, transparent);
+  background-repeat:repeat;background-size:520px 520px}
+
+/* ---- nav ---- */
+nav{position:fixed;top:0;left:0;right:0;height:60px;z-index:100;display:flex;
+  align-items:center;gap:20px;padding:0 26px;
+  background:rgba(8,12,26,.72);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(91,200,255,.14)}
+nav .brand{font-weight:800;letter-spacing:.06em;font-size:14px}
+nav .brand b{color:var(--cy)}
+nav .links{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+nav a{color:var(--mut);text-decoration:none;font-size:12.5px;padding:7px 10px;border-radius:8px}
+nav a:hover{color:var(--ink);background:rgba(91,200,255,.10)}
+#prog{position:fixed;top:60px;left:0;height:2px;background:linear-gradient(90deg,var(--cy),var(--pur));width:0;z-index:100}
+
+/* ---- layout ---- */
+section{max-width:1120px;margin:0 auto;padding:84px 26px}
+.eyebrow{color:var(--cy);font-weight:700;font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px}
+h2.title{font-size:clamp(26px,4vw,40px);font-weight:800;line-height:1.25;letter-spacing:.01em;margin-bottom:18px}
+.km{display:inline-block;border-left:3px solid var(--gold);background:var(--km);
+  padding:12px 18px;border-radius:0 12px 12px 0;font-weight:700;font-size:clamp(15px,1.7vw,18px);margin-bottom:36px}
+.km .cy{color:var(--cy)} .km .gd{color:var(--gold)}
+.grid{display:grid;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;
+  backdrop-filter:blur(4px)}
+.card .h{font-weight:700;font-size:17px;margin-bottom:8px}
+.card p{color:var(--mut);font-size:14.5px}
+.accent-top{border-top:3px solid var(--cy)}
+small.src{display:block;color:var(--dim);font-size:11.5px;margin-top:22px}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ---- hero ---- */
+.hero{max-width:none;min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:0 7vw;position:relative}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(8,12,26,.92) 0%,rgba(8,12,26,.55) 45%,rgba(8,12,26,.25) 100%),
+  url("assets/hero-bg.png") center/cover no-repeat}
+.hero .kick{color:var(--cy);font-weight:700;letter-spacing:.34em;font-size:14px;margin-bottom:22px}
+.hero h1{font-size:clamp(40px,9vw,96px);font-weight:800;line-height:.98;letter-spacing:.01em}
+.hero h1 .cy{color:var(--cy)}
+.hero .tag{font-size:clamp(17px,2.4vw,24px);margin-top:26px;font-weight:600}
+.hero .sub{color:var(--dim);font-size:14px;margin-top:8px;letter-spacing:.04em}
+.hero .badges{margin-top:40px;display:flex;gap:14px;flex-wrap:wrap}
+.hpill{border:1px solid var(--line);background:rgba(10,16,36,.6);border-radius:999px;
+  padding:9px 18px;font-size:13.5px;color:var(--mut)}
+.hpill b{color:var(--ink)} .hpill .gd{color:var(--gold)} .hpill .cy{color:var(--cy)}
+.scrollcue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:var(--dim);font-size:12px;letter-spacing:.2em;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+
+/* ---- metrics ---- */
+.metrics{grid-template-columns:repeat(3,1fr)}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.metric .big{font-size:30px;font-weight:800;line-height:1}
+.metric .lbl{color:var(--mut);font-size:13px;margin-top:10px}
+.takeaway{margin-top:18px;background:var(--km);border:1px solid var(--line);border-radius:14px;
+  padding:14px 18px;font-size:14px;color:var(--mut)}
+.takeaway .gd{color:var(--gold);font-weight:700}.takeaway b{color:var(--ink)}
+
+/* ---- bars (power law / revenue) ---- */
+.chart{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.chart .ct{color:var(--cy);font-weight:700;font-size:13.5px;margin-bottom:16px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:190px}
+.bars .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bars .bar{width:100%;border-radius:6px 6px 0 0;min-height:6px}
+.bars .v{font-size:11px;color:var(--ink);font-weight:700;margin-bottom:5px}
+.bars .x{font-size:11px;color:var(--mut);margin-top:7px}
+
+/* ---- stacked SOM ---- */
+.stack{display:flex;height:48px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.stack .seg{display:flex;align-items:center;justify-content:center;font-weight:800;color:#06101f;font-size:14px}
+.legend{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+.legend .lg{background:rgba(10,16,36,.5);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.legend .lg .nm{font-size:12px;font-weight:700}.legend .lg .un{font-size:10.5px;color:var(--mut);margin:3px 0}
+.legend .lg .val{font-weight:800;font-size:15px}
+
+/* ---- waterfall ---- */
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.flow .step{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:16px;text-align:center}
+.flow .step .b{font-size:19px;font-weight:800}
+.flow .step .l{font-size:11.5px;color:var(--mut);margin-top:6px}
+.flow .arrow{display:flex;align-items:center;color:var(--dim);font-size:20px}
+.frbox{margin-top:18px;background:var(--km);border:1px solid var(--gold);border-radius:14px;padding:18px 20px;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+.frbox .lab{color:var(--gold);font-weight:800}
+.frbox .big{font-size:26px;font-weight:800}
+
+/* chain / pills */
+.three{grid-template-columns:repeat(3,1fr)}
+.flag{background:rgba(245,180,84,.16);color:var(--gold);border:1px solid rgba(245,180,84,.4);
+  border-radius:5px;padding:0 6px;font-size:.85em;white-space:nowrap}
+
+/* closing */
+.closing{max-width:none;min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:0 7vw;position:relative}
+.closing::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(8,12,26,.92),rgba(8,12,26,.4)),url("assets/hero-bg.png") center/cover no-repeat}
+.closing h2{font-size:clamp(30px,6vw,62px);font-weight:800;line-height:1.1}
+.closing h2 .cy{color:var(--cy)}
+.decision{margin-top:30px;background:var(--km);border:1px solid var(--gold);border-radius:16px;padding:20px 24px;font-size:15px}
+.decision .gd{color:var(--gold);font-weight:800}.decision .cy{color:var(--cy);font-weight:700}
+
+footer{max-width:1120px;margin:0 auto;padding:40px 26px 80px;color:var(--dim);font-size:12.5px;
+  border-top:1px solid var(--line)}
+footer a{color:var(--cy)}
+#toTop{position:fixed;right:20px;bottom:20px;z-index:100;width:46px;height:46px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(17,28,60,.85);color:var(--ink);font-size:18px;cursor:pointer;
+  opacity:0;transition:.25s}
 #toTop.show{opacity:1}
-@media(max-width:880px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+@media(max-width:820px){
+  .metrics,.three,.legend{grid-template-columns:1fr 1fr}
+  nav .links{display:none}
+}
 </style>
 </head>
 <body>
-<header id="top"><b>Solafune 投資ピッチ</b>
-  <span class="meta">完成版スライド・縦スクロール（提出時はそのままスライド配布）　|　source: outputs/05_発表スライド.pdf　|　全13枚　|　built 2026-06-21 12:15</span></header>
+
+<nav>
+  <span class="brand"><b>SENTINEL</b> CAPITAL</span>
+  <span class="links">
+    <a href="#edge">勝ち筋</a><a href="#fund">設計</a><a href="#now">なぜ今</a>
+    <a href="#target">対象</a><a href="#moat">優位</a><a href="#market">市場</a>
+    <a href="#fin">財務</a><a href="#exit">Exit</a><a href="#pf">分布</a>
+    <a href="#risk">リスク</a><a href="#close">結論</a>
+  </span>
+</nav>
 <div id="prog"></div>
-<div class="layout">
-  <nav class="toc"><div class="toc-title">目次</div>
-<a class="toc-link" href="#s1" data-target="s1"><span class="toc-no">01</span><span class="toc-text">表紙｜Sentinel Capital × Solafune</span></a>
-<a class="toc-link" href="#s2" data-target="s2"><span class="toc-no">02</span><span class="toc-text">勝ち筋｜私たちは、どう勝つか</span></a>
-<a class="toc-link" href="#s3" data-target="s3"><span class="toc-no">03</span><span class="toc-text">ファンド設計｜数字で語る骨格</span></a>
-<a class="toc-link" href="#s4" data-target="s4"><span class="toc-no">04</span><span class="toc-text">べき乗則｜1社で元手を返すFR</span></a>
-<a class="toc-link" href="#s5" data-target="s5"><span class="toc-no">05</span><span class="toc-text">なぜ今｜経済安全保障 × 宇宙</span></a>
-<a class="toc-link" href="#s6" data-target="s6"><span class="toc-no">06</span><span class="toc-text">投資対象｜Solafune＝地球を読むOS</span></a>
-<a class="toc-link" href="#s7" data-target="s7"><span class="toc-no">07</span><span class="toc-text">競争優位｜なぜ Solafune が勝てるか</span></a>
-<a class="toc-link" href="#s8" data-target="s8"><span class="toc-no">08</span><span class="toc-text">市場（SOM）｜誰に・いくらで・何件</span></a>
-<a class="toc-link" href="#s9" data-target="s9"><span class="toc-no">09</span><span class="toc-text">定量モデル｜5年の成長と粗利</span></a>
-<a class="toc-link" href="#s10" data-target="s10"><span class="toc-no">10</span><span class="toc-text">Exit｜1社でファンドを返す</span></a>
-<a class="toc-link" href="#s11" data-target="s11"><span class="toc-no">11</span><span class="toc-text">ポートフォリオ｜ネット3.0Xは分布で</span></a>
-<a class="toc-link" href="#s12" data-target="s12"><span class="toc-no">12</span><span class="toc-text">リスク｜弱点を、先に潰す</span></a>
-<a class="toc-link" href="#s13" data-target="s13"><span class="toc-no">13</span><span class="toc-text">まとめ｜投資判断</span></a>
-  </nav>
-  <main>
-<section id="s1" class="section"><div class="sec-head"><span class="sec-no">01</span><span class="sec-title">表紙｜Sentinel Capital × Solafune</span></div><img loading="lazy" src="assets/slide-01.png" alt="スライド1：表紙｜Sentinel Capital × Solafune"></section>
-<section id="s2" class="section"><div class="sec-head"><span class="sec-no">02</span><span class="sec-title">勝ち筋｜私たちは、どう勝つか</span></div><img loading="lazy" src="assets/slide-02.png" alt="スライド2：勝ち筋｜私たちは、どう勝つか"></section>
-<section id="s3" class="section"><div class="sec-head"><span class="sec-no">03</span><span class="sec-title">ファンド設計｜数字で語る骨格</span></div><img loading="lazy" src="assets/slide-03.png" alt="スライド3：ファンド設計｜数字で語る骨格"></section>
-<section id="s4" class="section"><div class="sec-head"><span class="sec-no">04</span><span class="sec-title">べき乗則｜1社で元手を返すFR</span></div><img loading="lazy" src="assets/slide-04.png" alt="スライド4：べき乗則｜1社で元手を返すFR"></section>
-<section id="s5" class="section"><div class="sec-head"><span class="sec-no">05</span><span class="sec-title">なぜ今｜経済安全保障 × 宇宙</span></div><img loading="lazy" src="assets/slide-05.png" alt="スライド5：なぜ今｜経済安全保障 × 宇宙"></section>
-<section id="s6" class="section"><div class="sec-head"><span class="sec-no">06</span><span class="sec-title">投資対象｜Solafune＝地球を読むOS</span></div><img loading="lazy" src="assets/slide-06.png" alt="スライド6：投資対象｜Solafune＝地球を読むOS"></section>
-<section id="s7" class="section"><div class="sec-head"><span class="sec-no">07</span><span class="sec-title">競争優位｜なぜ Solafune が勝てるか</span></div><img loading="lazy" src="assets/slide-07.png" alt="スライド7：競争優位｜なぜ Solafune が勝てるか"></section>
-<section id="s8" class="section"><div class="sec-head"><span class="sec-no">08</span><span class="sec-title">市場（SOM）｜誰に・いくらで・何件</span></div><img loading="lazy" src="assets/slide-08.png" alt="スライド8：市場（SOM）｜誰に・いくらで・何件"></section>
-<section id="s9" class="section"><div class="sec-head"><span class="sec-no">09</span><span class="sec-title">定量モデル｜5年の成長と粗利</span></div><img loading="lazy" src="assets/slide-09.png" alt="スライド9：定量モデル｜5年の成長と粗利"></section>
-<section id="s10" class="section"><div class="sec-head"><span class="sec-no">10</span><span class="sec-title">Exit｜1社でファンドを返す</span></div><img loading="lazy" src="assets/slide-10.png" alt="スライド10：Exit｜1社でファンドを返す"></section>
-<section id="s11" class="section"><div class="sec-head"><span class="sec-no">11</span><span class="sec-title">ポートフォリオ｜ネット3.0Xは分布で</span></div><img loading="lazy" src="assets/slide-11.png" alt="スライド11：ポートフォリオ｜ネット3.0Xは分布で"></section>
-<section id="s12" class="section"><div class="sec-head"><span class="sec-no">12</span><span class="sec-title">リスク｜弱点を、先に潰す</span></div><img loading="lazy" src="assets/slide-12.png" alt="スライド12：リスク｜弱点を、先に潰す"></section>
-<section id="s13" class="section"><div class="sec-head"><span class="sec-no">13</span><span class="sec-title">まとめ｜投資判断</span></div><img loading="lazy" src="assets/slide-13.png" alt="スライド13：まとめ｜投資判断"></section>
-  </main>
-</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="kick">VC FUND PITCH</div>
+  <h1>SENTINEL<br><span class="cy">CAPITAL</span> PARTNERS</h1>
+  <div class="tag">宇宙から地球を読み、経済安全保障に張る。</div>
+  <div class="sub">Securing the critical frontier — from orbit.</div>
+  <div class="badges">
+    <span class="hpill">投資対象 <b>Solafune</b></span>
+    <span class="hpill">3号ファンド <span class="gd">¥150億</span></span>
+    <span class="hpill">集中 <b>10–12社</b></span>
+    <span class="hpill">目標 <span class="cy">ネットDPI 3.0X</span></span>
+  </div>
+  <div class="scrollcue">SCROLL ↓</div>
+</header>
+
+<!-- EDGE -->
+<section id="edge" class="reveal">
+  <div class="eyebrow">Our Edge ・ 勝ち筋</div>
+  <h2 class="title">私たちは、どう勝つか</h2>
+  <div class="km">衛星を持たない解析レイヤーの1社に、<span class="gd">ファンドの元手1本ぶんを集中して張る</span>——狭く深く。</div>
+  <div class="grid three">
+    <div class="card accent-top"><div class="h">主権 <span style="color:var(--cy);font-size:12px">SOVEREIGNTY</span></div><p>国産・データ主権が不可欠な領域に、政府アンカーで張る。</p></div>
+    <div class="card" style="border-top:3px solid var(--gold)"><div class="h">集中 <span style="color:var(--gold);font-size:12px">CONCENTRATION</span></div><p>10〜12社に絞り、1社でファンドを返す設計に徹する。</p></div>
+    <div class="card" style="border-top:3px solid var(--pur)"><div class="h">宇宙×AI <span style="color:var(--pur);font-size:12px">ORBIT × AI</span></div><p>衛星×AIで地球を解析するソフト層に投資する。</p></div>
+  </div>
+</section>
+
+<!-- FUND DESIGN -->
+<section id="fund" class="reveal">
+  <div class="eyebrow">Fund Design ・ ファンド設計</div>
+  <h2 class="title">数字で語るファンドの骨格</h2>
+  <div class="km">150億・集中10社・初回5.5億で持分<span class="gd">約15%</span>、狙うはネット<span class="cy">DPI 3.0X</span></div>
+  <div class="grid metrics">
+    <div class="metric"><div class="big" style="color:var(--cy)">¥150億</div><div class="lbl">ファンド総額（3号）</div></div>
+    <div class="metric"><div class="big" style="color:var(--gold)">3.0X</div><div class="lbl">目標ネットDPI</div></div>
+    <div class="metric"><div class="big" style="color:var(--cy)">10–12社</div><div class="lbl">集中ポートフォリオ</div></div>
+    <div class="metric"><div class="big" style="color:var(--gold)">約15%</div><div class="lbl">エントリー持分（リード）</div></div>
+    <div class="metric"><div class="big" style="color:var(--cy)">2 / 20</div><div class="lbl">管理報酬 / 成功報酬</div></div>
+    <div class="metric"><div class="big" style="color:var(--gold)">10年</div><div class="lbl">運用期間</div></div>
+  </div>
+  <div class="takeaway">算数：初回5.5億 ÷ 投資後36.5億（Pre 31＋5.5）＝ <span class="gd">約15%</span>。チームは <b>GP2＋アソシ2＋クリアランス保持</b>＝深く回せる件数の天井10〜12社。</div>
+</section>
+
+<!-- POWER LAW -->
+<section id="powerlaw" class="reveal">
+  <div class="eyebrow">How VC Wins ・ べき乗則</div>
+  <h2 class="title">1社で元手を返す“ファンドリターナー”</h2>
+  <div class="km">ネット3.0Xは“全社そこそこ”では作れない——<span class="gd">少数のアウトライヤーを必ず1社仕込む</span></div>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr">
+    <div class="chart">
+      <div class="ct">10社のリターン分布（イメージ）</div>
+      <div class="bars">
+        <div class="col"><div class="v" style="color:var(--gold)">FR</div><div class="bar" style="height:100%;background:var(--gold)"></div></div>
+        <div class="col"><div class="v" style="color:var(--cy)">7-8X</div><div class="bar" style="height:66%;background:var(--cy)"></div></div>
+        <div class="col"><div class="bar" style="height:44%;background:var(--mut)"></div></div>
+        <div class="col"><div class="bar" style="height:39%;background:var(--mut)"></div></div>
+        <div class="col"><div class="bar" style="height:25%;background:var(--dim)"></div></div>
+        <div class="col"><div class="bar" style="height:20%;background:var(--dim)"></div></div>
+        <div class="col"><div class="bar" style="height:15%;background:var(--dim)"></div></div>
+        <div class="col"><div class="bar" style="height:11%;background:var(--dim)"></div></div>
+        <div class="col"><div class="bar" style="height:8%;background:var(--dim)"></div></div>
+        <div class="col"><div class="bar" style="height:6%;background:var(--dim)"></div></div>
+      </div>
+      <p style="color:var(--mut);font-size:12.5px;margin-top:10px">1〜2社の大当たりが回収の大半を作る</p>
+    </div>
+    <div class="card">
+      <div class="h" style="color:var(--cy);font-size:14px">ファンドリターナーの4条件</div>
+      <p style="margin:8px 0"><b style="color:var(--gold)">①</b> 1社で150億超のポジションが射程（高い天井）</p>
+      <p style="margin:8px 0"><b style="color:var(--gold)">②</b> シード〜Aでリードしエグジット持分10〜12%確保</p>
+      <p style="margin:8px 0"><b style="color:var(--gold)">③</b> 日本のIPOか国内プライム・商社M&Aで回収</p>
+      <p style="margin:8px 0"><b style="color:var(--gold)">④</b> センサー非依存の解析レイヤーという自社エッジ</p>
+      <p style="margin-top:12px"><b>Solafune＝4条件すべてに高適合</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NOW -->
+<section id="now" class="reveal">
+  <div class="eyebrow">Why Now ・ なぜ今</div>
+  <h2 class="title">経済安全保障 × 宇宙の時代</h2>
+  <div class="km">重要鉱物をめぐる主権争いが、<span class="gd">国産インテリジェンス需要を構造的に押し上げる</span></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <div class="h">重要鉱物をめぐる主権争い</div>
+      <p style="margin:6px 0">● 中国がレアアース輸出管理を強化、アフリカ等で鉱床を囲い込み</p>
+      <p style="margin:6px 0">● サプライチェーン途絶リスクが現実化（磁石・半導体）</p>
+      <p style="margin:6px 0;color:var(--cy)">→ 国産の資源モニタリング／解析需要が構造拡大</p>
+    </div>
+    <div>
+      <div class="grid" style="gap:12px">
+        <div class="metric" style="display:flex;align-items:baseline;gap:14px"><div class="big" style="color:var(--cy)">¥8.8兆</div><div class="lbl" style="margin:0">防衛関係費（2026年度）</div></div>
+        <div class="metric" style="display:flex;align-items:baseline;gap:14px"><div class="big" style="color:var(--gold)">¥1兆</div><div class="lbl" style="margin:0">宇宙戦略基金（10年）</div></div>
+        <div class="metric" style="display:flex;align-items:baseline;gap:14px"><div class="big" style="color:var(--pur)">数千億円</div><div class="lbl" style="margin:0">経済安保 強靱化予算</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="takeaway"><span class="gd">2026年の制度変化</span>　① 輸出緩和（同志国市場へ）　② ファストパス調達 約3.5か月　③ 前払い導入＝死の谷を浅く</div>
+  <small class="src">出典：防衛省・宇宙戦略基金／Morning Pitch（01前提パック §4・§6）</small>
+</section>
+
+<!-- TARGET -->
+<section id="target" class="reveal">
+  <div class="eyebrow">The Target ・ 投資対象</div>
+  <h2 class="title">Solafune ― 地球を読むOS</h2>
+  <div class="km">衛星画像・公開情報・通信という様々な“目”を束ねるAI＝<span class="cy">Planetary Intelligence OS</span></div>
+  <div class="grid three">
+    <div class="card"><div class="h">GEOINT</div><p>衛星・地理空間</p></div>
+    <div class="card"><div class="h">OSINT</div><p>公開情報・Web</p></div>
+    <div class="card"><div class="h">SIGINT</div><p>通信・電波</p></div>
+  </div>
+  <div class="grid three" style="margin-top:16px">
+    <div class="card accent-top"><p>▸ 重要鉱物の探査・違法採掘モニタリング（SHIGEN AI）</p></div>
+    <div class="card accent-top"><p>▸ 防衛省・警察庁・内閣府 ＋ アフリカ諸国・国連機関</p></div>
+    <div class="card accent-top"><p>▸ 120カ国超の開発者コミュニティが解析を供給</p></div>
+  </div>
+</section>
+
+<!-- MOAT -->
+<section id="moat" class="reveal">
+  <div class="eyebrow">Moat ・ 競争優位</div>
+  <h2 class="title">なぜ Solafune が勝てるか</h2>
+  <div class="km">各社と競合せず“その上”の解析レイヤーに乗る——<span class="gd">資本効率・ネットワーク効果・主権的信認</span></div>
+  <div class="grid three">
+    <div class="card"><div class="h" style="color:var(--mut)">上流</div><p>衛星を作る・飛ばす<br><b style="color:var(--ink)">三菱電機 等</b></p></div>
+    <div class="card"><div class="h" style="color:var(--mut)">中流</div><p>データを撮る・売る<br><b style="color:var(--ink)">Synspective / ICEYE</b></p></div>
+    <div class="card" style="border:1px solid var(--gold)"><div class="h" style="color:var(--gold)">下流</div><p>解析 → インテリジェンス<br><b style="color:var(--gold)">★ Solafune</b></p></div>
+  </div>
+  <div class="grid three" style="margin-top:16px">
+    <div class="card"><div class="h">◆ センサー非依存</div><p>衛星を持たず複数ソースを統合する解析層＝高い資本効率。</p></div>
+    <div class="card"><div class="h">◆ ネットワーク効果</div><p>120カ国の開発者がデータ・人材・アルゴリズムを循環供給。</p></div>
+    <div class="card"><div class="h">◆ 主権的信認</div><p>政府・国際機関の実績が参入障壁の高い領域での堀になる。</p></div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section id="market" class="reveal">
+  <div class="eyebrow">Market ・ 市場規模（SOM）</div>
+  <h2 class="title">“誰に・いくらで・何件”で積む</h2>
+  <div class="km">2032年SOM <span class="gd">約101億円</span> は、Exit逆算の必要売上 約88億と一致＝市場と財務が一本の線</div>
+  <div class="chart">
+    <div class="ct">2030年 SOM 積み上げ ＝ 85億円 / 38件</div>
+    <div class="stack">
+      <div class="seg" style="flex:30;background:var(--cy)">30</div>
+      <div class="seg" style="flex:15;background:var(--pur)">15</div>
+      <div class="seg" style="flex:6;background:var(--mut)">6</div>
+      <div class="seg" style="flex:14;background:var(--gold)">14</div>
+      <div class="seg" style="flex:20;background:#4db1e6">20</div>
+    </div>
+    <div class="legend">
+      <div class="lg"><div class="nm" style="color:var(--cy)">A 日本政府</div><div class="un">12件×2.5億</div><div class="val" style="color:var(--cy)">¥30億</div></div>
+      <div class="lg"><div class="nm" style="color:var(--pur)">B 宇宙基金</div><div class="un">5件×3億</div><div class="val" style="color:var(--pur)">¥15億</div></div>
+      <div class="lg"><div class="nm" style="color:var(--mut)">C 同志国MoU</div><div class="un">8×50%×1.5億</div><div class="val" style="color:var(--mut)">¥6億</div></div>
+      <div class="lg"><div class="nm" style="color:var(--gold)">D 経済安保</div><div class="un">SHIGEN AI</div><div class="val" style="color:var(--gold)">¥14億</div></div>
+      <div class="lg"><div class="nm" style="color:#4db1e6">E 民間</div><div class="un">資源・インフラ監視</div><div class="val" style="color:#4db1e6">¥20億</div></div>
+    </div>
+  </div>
+  <div class="takeaway">2030年 <b>85億/38件</b> → 2032年 <span class="gd">101億/46件</span>。シェア仮定なし、単価×件数の積み上げ<span class="flag">仮・要検証／C転換率が最も要実証</span></div>
+  <small class="src">出典：01前提パック §2-3（ボトムアップ積算）</small>
+</section>
+
+<!-- FINANCIALS -->
+<section id="fin" class="reveal">
+  <div class="eyebrow">Quant ・ 定量モデル</div>
+  <h2 class="title">5年で描く成長 <span style="font-size:.5em;color:var(--dim)">（仮・要検証）</span></h2>
+  <div class="km">売上 4億→85億（CAGR約113%）×粗利 <span class="gd">60→72%</span>。KPI閾値クリアで段階投資</div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr">
+    <div class="chart">
+      <div class="ct">売上高の推移（億円）</div>
+      <div class="bars">
+        <div class="col"><div class="v">4</div><div class="bar" style="height:5%;background:var(--cy)"></div><div class="x">'26</div></div>
+        <div class="col"><div class="v">12</div><div class="bar" style="height:14%;background:var(--cy)"></div><div class="x">'27</div></div>
+        <div class="col"><div class="v">30</div><div class="bar" style="height:35%;background:var(--cy)"></div><div class="x">'28</div></div>
+        <div class="col"><div class="v">55</div><div class="bar" style="height:65%;background:var(--cy)"></div><div class="x">'29</div></div>
+        <div class="col"><div class="v">85</div><div class="bar" style="height:100%;background:var(--gold)"></div><div class="x">'30</div></div>
+      </div>
+      <p style="color:var(--mut);font-size:12.5px;margin-top:10px">日本政府 → 同志国 → 民間（グローバルサウス）の段階展開</p>
+    </div>
+    <div class="grid" style="gap:12px">
+      <div class="metric"><div class="big" style="color:var(--gold)">60% → 72%</div><div class="lbl">グロスマージン（ソフト/解析）</div></div>
+      <div class="metric"><div class="big" style="color:var(--cy)">¥31→36.5億</div><div class="lbl">投資前Pre→投資後Post-Val</div></div>
+      <div class="metric"><div class="big" style="color:var(--pur)">年率 約2倍</div><div class="lbl">政府リカーリングのフォローKPI</div></div>
+    </div>
+  </div>
+  <small class="src">出典：02財務モデル.xlsx（PL/前提シート）</small>
+</section>
+
+<!-- EXIT -->
+<section id="exit" class="reveal">
+  <div class="eyebrow">Exit ・ バリュエーション</div>
+  <h2 class="title">1社でファンドを返す</h2>
+  <div class="km">Exit売上101億 × <span class="cy">EV/Sales 17倍</span> → 企業価値 <span class="gd">約1,717億円</span>（持分12%で206億）</div>
+  <div class="flow">
+    <div class="step"><div class="b" style="color:var(--cy)">¥101億</div><div class="l">売上（2032E）</div></div>
+    <div class="arrow">▸</div>
+    <div class="step"><div class="b" style="color:var(--mut)">× 17倍</div><div class="l">EV/Sales（保守15–18）</div></div>
+    <div class="arrow">▸</div>
+    <div class="step"><div class="b" style="color:var(--gold)">¥1,717億</div><div class="l">Exit企業価値</div></div>
+    <div class="arrow">▸</div>
+    <div class="step"><div class="b" style="color:var(--mut)">× 12%</div><div class="l">Exit持分</div></div>
+    <div class="arrow">▸</div>
+    <div class="step"><div class="b" style="color:var(--pur)">¥206億</div><div class="l">ポジション</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr;margin-top:16px">
+    <div class="card">
+      <div class="h" style="color:var(--cy);font-size:14px">EV/Sales 17倍の統計的導出</div>
+      <p style="margin:6px 0">comps採用群 {Planet6・Synspective7・BlackSky10・Anduril14・Palantirプレ20}</p>
+      <p style="margin:6px 0">中央値10倍 ＋ ソフト+3／粗利+2／主権プレミアム+2 ＝ <b style="color:var(--gold)">17倍</b></p>
+      <p style="margin:6px 0;color:var(--dim)">Palantir現況60.7倍はバブル局面として明示除外</p>
+    </div>
+    <div class="frbox" style="margin:0;flex-direction:column;gap:6px">
+      <div class="lab">ファンドリターナー成立</div>
+      <div><span class="big">¥206億</span> <span style="color:var(--mut)">÷ ¥150億</span></div>
+      <div style="color:var(--mut)">＝ 対ファンド <span style="color:var(--cy);font-weight:800">1.37X</span>／総コミMOIC <span style="color:var(--gold);font-weight:800">12.5X</span></div>
+    </div>
+  </div>
+  <small class="src">出典：01前提パック §5・02財務モデル Exit/リターン</small>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="pf" class="reveal">
+  <div class="eyebrow">Portfolio ・ ポートフォリオ</div>
+  <h2 class="title">ネット3.0Xは分布で作る</h2>
+  <div class="km">Solafune 206億 ＋ べき乗則10社 → <span class="gd">グロス4.3X → ネットDPI 3.0X</span>（上位2社で回収の約65%）</div>
+  <div class="grid" style="grid-template-columns:repeat(5,1fr)">
+    <div class="card" style="border-top:3px solid var(--gold)"><div class="h" style="font-size:14px">Solafune</div><p style="font-size:11.5px">★ FR（本命）</p><div class="big" style="color:var(--gold);font-size:22px;font-weight:800;margin-top:6px">¥206億</div></div>
+    <div class="card accent-top"><div class="h" style="font-size:14px">Humanity Brain</div><p style="font-size:11.5px">認知戦AI・7-8X｜実在</p><div style="color:var(--cy);font-size:22px;font-weight:800;margin-top:6px">¥136億</div></div>
+    <div class="card"><div class="h" style="font-size:14px">C・D</div><p style="font-size:11.5px">3-5X級2社</p><div style="color:var(--mut);font-size:22px;font-weight:800;margin-top:6px">¥119億</div></div>
+    <div class="card"><div class="h" style="font-size:14px">E-G</div><p style="font-size:11.5px">1-2X級3社</p><div style="color:var(--dim);font-size:22px;font-weight:800;margin-top:6px">¥43億</div></div>
+    <div class="card"><div class="h" style="font-size:14px">H-J</div><p style="font-size:11.5px">0-1X級3社</p><div style="color:var(--dim);font-size:22px;font-weight:800;margin-top:6px">¥20億</div></div>
+  </div>
+  <div class="grid three" style="margin-top:16px">
+    <div class="metric"><div class="big" style="color:var(--cy)">¥123億</div><div class="lbl">投下資本（10社）</div></div>
+    <div class="metric"><div class="big" style="color:var(--gold)">¥524億 / 4.3X</div><div class="lbl">グロス回収</div></div>
+    <div class="metric"><div class="big" style="color:var(--pur)">3.0X</div><div class="lbl">ネットDPI（検算一致）</div></div>
+  </div>
+  <div class="takeaway">DPI＝財布全体が何倍／MOIC＝この1社が何倍。<b>少数の当たりで勝つ＝VCのべき乗則を体現。</b></div>
+  <small class="src">出典：02財務モデル「ポートフォリオ」シート（net DPI 2.995≈3.0X）</small>
+</section>
+
+<!-- RISK -->
+<section id="risk" class="reveal">
+  <div class="eyebrow">Risk ・ リスクと備え</div>
+  <h2 class="title">弱点を、先に潰す</h2>
+  <div class="km">出口・政府依存・評価・バブルの4論点に、<span class="gd">契約と設計レベルの具体策を当てる</span></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><div class="h">⚠ 出口が未実証</div><p>上場済み宇宙SU（Synspective等）が実証。日本IPO波に乗る。</p></div>
+    <div class="card"><div class="h">⚠ 政府依存・調達変動</div><p>マイルストン連動＋同志国横展開でリカーリング化。</p></div>
+    <div class="card"><div class="h">⚠ バリュエーション非開示</div><p>トランシェ払込・希薄化防止・取締役指名権を確保。</p></div>
+    <div class="card"><div class="h">⚠ 防衛AIバブル懸念</div><p>保守的マルチプル(15–18倍)とExit時期の柔軟化で吸収。</p></div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<header id="close" class="closing reveal">
+  <div class="eyebrow">Sentinel Capital Partners × Solafune</div>
+  <h2>地球を読む者が、<br><span class="cy">次の安全保障を制する。</span></h2>
+  <p style="color:var(--mut);font-size:17px;margin-top:18px">経済安全保障 × 宇宙 × AI に、狭く深く張る。</p>
+  <div class="decision">
+    <span class="gd">投資判断：</span><b>初回5.5億・持分約15%でリード</b>／Exit 206億・対ファンド1.37X・ネットDPI 3.0X ＝ <span class="cy">ファンドリターナー候補</span>
+  </div>
+  <p style="color:var(--dim);font-size:13px;margin-top:22px">ご清聴ありがとうございました</p>
+</header>
+
+<footer>
+  <b style="color:var(--ink)">SENTINEL CAPITAL PARTNERS</b>｜センチネル・キャピタル　—　Identity Academy 第3回課題（VC投資ピッチ：Solafune）<br>
+  これはチーム確認・共有用のWebプレビューです。提出はスライドPDF＋8分動画。数値はすべて［仮・要検証］。<br>
+  完成版スライドの原本画像 → <a href="slides.html">slides.html</a>　|　source: build/build_deck.py（同一デザイン言語）
+</footer>
+
 <button id="toTop" title="トップへ">↑</button>
+
 <script>
-const prog=document.getElementById('prog');
-const toTop=document.getElementById('toTop');
-function onScroll(){
-  const h=document.documentElement;
-  const sc=h.scrollTop/((h.scrollHeight-h.clientHeight)||1);
+const prog=document.getElementById('prog'),toTop=document.getElementById('toTop');
+addEventListener('scroll',()=>{
+  const h=document.documentElement,sc=h.scrollTop/((h.scrollHeight-h.clientHeight)||1);
   prog.style.width=(sc*100)+'%';
-  toTop.classList.toggle('show',h.scrollTop>400);
-}
-document.addEventListener('scroll',onScroll,{passive:true});onScroll();
-toTop.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-const links=[...document.querySelectorAll('.toc-link')];
-const map=Object.fromEntries(links.map(l=>[l.dataset.target,l]));
-const obs=new IntersectionObserver((es)=>{
-  es.forEach(e=>{ if(e.isIntersecting){
-    links.forEach(l=>l.classList.remove('active'));
-    const a=map[e.target.id]; if(a){a.classList.add('active');a.scrollIntoView({block:'nearest'});}
-  }});
-},{rootMargin:'-45% 0px -50% 0px'});
-document.querySelectorAll('main section').forEach(s=>obs.observe(s));
+  toTop.classList.toggle('show',h.scrollTop>500);
+},{passive:true});
+toTop.onclick=()=>scrollTo({top:0,behavior:'smooth'});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
 </body>
 </html>

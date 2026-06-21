@@ -12,9 +12,10 @@ import fitz  # PyMuPDF
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PDF = ROOT / "outputs" / "05_発表スライド.pdf"
+# index.html は手作りの宇宙デザインHP。こちらは原本スライドの画像ビュー（slides.html）。
 WEB = ROOT / "outputs" / "web"
 ASSETS = WEB / "assets"
-OUT = WEB / "index.html"
+OUT = WEB / "slides.html"
 ZOOM = 2.0  # 72dpi × 2 = 144dpi（くっきり）
 
 
@@ -54,6 +55,11 @@ def render():
     if ASSETS.exists():
         shutil.rmtree(ASSETS)
     ASSETS.mkdir(parents=True, exist_ok=True)
+
+    # 宇宙デザインHP（index.html）が使う背景もここで配置（rmtreeで消えるため毎回コピー）
+    bg = ROOT / "build" / "assets"
+    shutil.copy(bg / "image1.png", ASSETS / "hero-bg.png")
+    shutil.copy(bg / "image13.png", ASSETS / "body-bg.png")
 
     sections, toc = [], []
     mat = fitz.Matrix(ZOOM, ZOOM)
