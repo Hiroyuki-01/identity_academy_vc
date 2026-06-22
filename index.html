@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Identity Academy VC — 成果物ナビ</title>
+<style>
+  :root { --bg:#0b1020; --card:#121a31; --ink:#eaf0ff; --sub:#9fb0d6;
+          --line:#26324f; --accent:#5b8cff; --gold:#f5b454; --green:#7fdc8e; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:"Segoe UI","Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+       padding:40px 24px;max-width:1000px;margin:0 auto;line-height:1.7}
+  h1{font-size:24px;margin:0 0 6px;letter-spacing:.02em}
+  .lead{color:var(--sub);font-size:13px;margin-bottom:32px}
+  h2{font-size:14px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;
+     margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .group{display:grid;grid-template-columns:1fr;gap:8px}
+  a.card{display:flex;align-items:center;gap:14px;padding:14px 16px;
+         background:var(--card);border:1px solid var(--line);border-radius:10px;
+         color:var(--ink);text-decoration:none;transition:.15s}
+  a.card:hover{border-color:var(--accent);background:#1a2746}
+  .tag{font-size:11px;padding:3px 8px;border-radius:6px;background:#1a2746;
+       color:var(--sub);min-width:60px;text-align:center;flex-shrink:0;border:1px solid var(--line)}
+  .tag.html{color:#9cd8ff;border-color:#3a5a90}
+  .tag.xlsx{color:var(--green);border-color:#3a8a5a}
+  .tag.pdf{color:var(--gold);border-color:#8a6a3a}
+  .tag.md{color:#c5b2ff;border-color:#5a4a8a}
+  .tag.py{color:#ffb380;border-color:#8a5a3a}
+  .name{flex:1;font-weight:600}
+  .desc{color:var(--sub);font-size:12px;margin-left:4px}
+  .note{background:#1a2440;border:1px solid var(--line);border-radius:10px;
+        padding:12px 16px;color:var(--sub);font-size:12.5px;margin-top:24px}
+  code{background:#0a1228;padding:2px 6px;border-radius:4px;color:#9cd8ff;font-size:12px}
+</style>
+</head>
+<body>
+
+<h1>Identity Academy VC — 成果物ナビ</h1>
+<div class="lead">Solafune 投資ピッチの成果物一覧。クリックで開けます(コピペすると表の罫線が混入するので注意)。</div>
+
+<h2>★ 財務モデル(2026-06-22 簡素化版)</h2>
+<div class="group">
+  <a class="card" href="outputs/02_財務モデル.xlsx">
+    <span class="tag xlsx">XLSX</span>
+    <span class="name">02_財務モデル.xlsx</span>
+    <span class="desc">新版・4シート50行(前提/ファンドリターナー/感度/ポートフォリオ)</span>
+  </a>
+  <a class="card" href="outputs/02_財務モデル.bak.xlsx">
+    <span class="tag xlsx">XLSX</span>
+    <span class="name">02_財務モデル.bak.xlsx</span>
+    <span class="desc">旧版バックアップ・6シート128行</span>
+  </a>
+</div>
+
+<h2>プレゼンテーション</h2>
+<div class="group">
+  <a class="card" href="outputs/web/slides.html">
+    <span class="tag html">HTML</span>
+    <span class="name">slides.html</span>
+    <span class="desc">提出スライド全13枚・縦スクロール表示</span>
+  </a>
+  <a class="card" href="outputs/web/index.html">
+    <span class="tag html">HTML</span>
+    <span class="name">index.html (Web版ピッチ)</span>
+    <span class="desc">スライドではなく Web ページ形式のピッチ</span>
+  </a>
+  <a class="card" href="outputs/05_発表スライド.pptx">
+    <span class="tag pdf">PPTX</span>
+    <span class="name">05_発表スライド.pptx</span>
+    <span class="desc">PowerPoint 原本</span>
+  </a>
+  <a class="card" href="outputs/05_発表スライド.pdf">
+    <span class="tag pdf">PDF</span>
+    <span class="name">05_発表スライド.pdf</span>
+    <span class="desc">PDF版</span>
+  </a>
+</div>
+
+<h2>ドキュメント(Markdown)</h2>
+<div class="group">
+  <a class="card" href="outputs/01_前提パック.md">
+    <span class="tag md">MD</span>
+    <span class="name">01_前提パック.md</span>
+    <span class="desc">市場・comps・公的需要プール・リスク</span>
+  </a>
+  <a class="card" href="outputs/03_スライド骨子.md">
+    <span class="tag md">MD</span>
+    <span class="name">03_スライド骨子.md</span>
+    <span class="desc">スライド骨子(13枚分)</span>
+  </a>
+  <a class="card" href="outputs/04_プレゼン台本.md">
+    <span class="tag md">MD</span>
+    <span class="name">04_プレゼン台本.md</span>
+    <span class="desc">8分プレゼン台本 + 想定Q&A</span>
+  </a>
+  <a class="card" href="outputs/README.md">
+    <span class="tag md">MD</span>
+    <span class="name">README.md</span>
+    <span class="desc">成果物一覧</span>
+  </a>
+</div>
+
+<h2>今回の変更(2026-06-22 財務モデル簡素化)</h2>
+<div class="group">
+  <a class="card" href="docs/specs/2026-06-21-financial-model-simplification-design.md">
+    <span class="tag md">MD</span>
+    <span class="name">設計書 (Design)</span>
+    <span class="desc">本質 vs 装飾の棲み分け / D-1〜D-7 意思決定 / 実装結果</span>
+  </a>
+  <a class="card" href="docs/specs/2026-06-22-financial-model-simplification-plan.md">
+    <span class="tag md">MD</span>
+    <span class="name">実装計画 (Plan)</span>
+    <span class="desc">セル単位の設計と検証ステップ</span>
+  </a>
+  <a class="card" href="build/build_financial_model.py">
+    <span class="tag py">PY</span>
+    <span class="name">build_financial_model.py</span>
+    <span class="desc">財務モデル再生成スクリプト</span>
+  </a>
+</div>
+
+<div class="note">
+  <b>注:</b> Markdown (.md) はブラウザで開くと生テキストが表示されます。整形済みで読みたい場合は VS Code などで開いてください。
+  XLSX は自動ダウンロードされ、Excel / Numbers で開けます。
+  サーバー: <code>http://127.0.0.1:8001/</code>
+</div>
+
+</body>
+</html>
