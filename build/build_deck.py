@@ -21,10 +21,23 @@ BG_COVER = os.path.join(HERE, "assets", "image1.png")
 BG_BODY  = os.path.join(HERE, "assets", "image13.png")
 OUT = os.path.join(os.path.dirname(HERE), "outputs", "05_発表スライド.pptx")
 
-# ---- palette ----
-CY   = "5BC8FF"; WH  = "EAF1FF"; MUT = "9DB0D0"; DIM  = "6E7FA6"
-GOLD = "F5B454"; PUR = "9C8CFF"; CARD = "111C3C"; CARDLN = "2A3B66"
-KMFILL = "13234D"; RED = "FF5C6C"; REDBG = "2A1530"
+# ---- palette（ライト＝本文白テーマ / ダーク＝扉絵・ボス演出）----
+_DEF = object()
+DARK = dict(CY="5BC8FF", WH="EAF1FF", MUT="9DB0D0", DIM="6E7FA6", GOLD="F5B454",
+            PUR="9C8CFF", CARD="111C3C", CARDLN="2A3B66", KMFILL="13234D",
+            RED="FF5C6C", REDBG="2A1530", GAUGE_OFF="243154", RULE="2C4A86")
+LIGHT = dict(CY="1488C2", WH="16263F", MUT="56627A", DIM="7C8AA3", GOLD="C77D11",
+             PUR="6E5AD9", CARD="EEF3FB", CARDLN="D5DEEC", KMFILL="EEF0F4",
+             RED="DC3B52", REDBG="FCE9ED", GAUGE_OFF="C7D0E0", RULE="9FAEC6")
+
+def set_theme(name):
+    global CY, WH, MUT, DIM, GOLD, PUR, CARD, CARDLN, KMFILL, RED, REDBG, GAUGE_OFF, RULE
+    p = LIGHT if name == "light" else DARK
+    CY, WH, MUT, DIM, GOLD, PUR, CARD, CARDLN, KMFILL, RED, REDBG, GAUGE_OFF, RULE = (
+        p["CY"], p["WH"], p["MUT"], p["DIM"], p["GOLD"], p["PUR"], p["CARD"],
+        p["CARDLN"], p["KMFILL"], p["RED"], p["REDBG"], p["GAUGE_OFF"], p["RULE"])
+
+set_theme("light")
 FONT = "Arial"; EAFONT = "Meiryo"
 
 prs = Presentation()
@@ -34,10 +47,12 @@ BLANK = prs.slide_layouts[6]
 
 def rgb(h): return RGBColor.from_string(h)
 
-def slide(bg=BG_BODY):
+def slide(bg=None):
     s = prs.slides.add_slide(BLANK)
-    pic = s.shapes.add_picture(bg, 0, 0, prs.slide_width, prs.slide_height)
-    sp = pic._element; sp.getparent().remove(sp); s.shapes._spTree.insert(2, sp)
+    if bg:  # 扉絵・ボス演出は宇宙背景を維持
+        pic = s.shapes.add_picture(bg, 0, 0, prs.slide_width, prs.slide_height)
+        sp = pic._element; sp.getparent().remove(sp); s.shapes._spTree.insert(2, sp)
+    # bg=None の本文スライドは白（BLANK レイアウト既定）
     return s
 
 def _set_font(run, size, color, bold, font=FONT):
@@ -48,8 +63,9 @@ def _set_font(run, size, color, bold, font=FONT):
         ea = rPr.makeelement(qn('a:ea'), {}); rPr.append(ea)
     ea.set('typeface', EAFONT)
 
-def text(s, x, y, w, h, runs, size=12, color=MUT, bold=False, align=PP_ALIGN.LEFT,
+def text(s, x, y, w, h, runs, size=12, color=_DEF, bold=False, align=PP_ALIGN.LEFT,
          anchor=MSO_ANCHOR.TOP, line_spacing=1.0, font=FONT, wrap=True):
+    if color is _DEF: color = MUT
     tb = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = tb.text_frame; tf.word_wrap = wrap
     tf.margin_left=0; tf.margin_right=0; tf.margin_top=0; tf.margin_bottom=0
@@ -79,7 +95,9 @@ def _shadow(shape):
     al = spPr.makeelement(qn('a:alpha'), {'val':'38000'})
     clr.append(al); sh.append(clr); el.append(sh); spPr.append(el)
 
-def card(s, x, y, w, h, fill=CARD, line=CARDLN, radius=0.07, shadow=True, line_w=1.0):
+def card(s, x, y, w, h, fill=_DEF, line=_DEF, radius=0.07, shadow=True, line_w=1.0):
+    if fill is _DEF: fill = CARD
+    if line is _DEF: line = CARDLN
     sh = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x), Inches(y), Inches(w), Inches(h))
     sh.fill.solid(); sh.fill.fore_color.rgb = rgb(fill)
     if line:
@@ -114,12 +132,15 @@ def oval(s, x, y, w, h, fill, line=None, line_w=2.0):
     else: sh.line.fill.background()
     sh.shadow.inherit = False; return sh
 
-def header(s, kicker, title, ksize=27, kc=CY):
-    text(s, 0.6, 0.34, 8.8, 0.28, kicker, size=11, color=kc, bold=True)
-    text(s, 0.6, 0.62, 8.8, 0.66, title, size=ksize, color=WH, bold=True)
+def header(s, kicker, title, ksize=27, kc=_DEF):
+    # アイブロウ（kicker）は廃止。タイトルを上詰めし、直下に区切り線。
+    text(s, 0.6, 0.40, 8.8, 0.74, title, size=ksize, color=WH, bold=True,
+         anchor=MSO_ANCHOR.MIDDLE)
+    rect(s, 0.6, 1.215, 8.8, 0.018, RULE)
 
-def keymsg(s, runs, y=1.34, h=0.62, barc=GOLD):
-    card(s, 0.6, y, 8.8, h, fill=KMFILL, line="2C4A86", radius=0.10, shadow=False, line_w=1.0)
+def keymsg(s, runs, y=1.34, h=0.62, barc=_DEF):
+    if barc is _DEF: barc = CY
+    card(s, 0.6, y, 8.8, h, fill=KMFILL, line=CARDLN, radius=0.06, shadow=False, line_w=0.75)
     rect(s, 0.6, y, 0.07, h, barc)
     if isinstance(runs, str): runs=[(runs, WH, True)]
     text(s, 0.86, y, 8.35, h, runs, size=13.5, color=WH, bold=True,
@@ -150,7 +171,7 @@ def hp_gauge(s, x, y, defeated, total=4):
          (f"{total-defeated}/{total}", RED if defeated < total else CY, True, 11)])
     px = x+1.55; pw = 0.34; gap = 0.10
     for i in range(total):
-        c = "243154" if i < defeated else RED
+        c = GAUGE_OFF if i < defeated else RED
         rect(s, px, y, pw, 0.18, c); px += pw+gap
 
 def rebuttal(page, defeated, kicker, title, attack, counter_runs, body_paras, src=None, title_sz=20):
@@ -168,9 +189,38 @@ def rebuttal(page, defeated, kicker, title, attack, counter_runs, body_paras, sr
     footer(s, page, src)
     return s
 
+def appendix(ap_no, title, lines, src=None, fsz=9.5, lh=0.265, cpl=48):
+    """補足（QA用・本編では飛ばす・0秒）スライド。lines＝('H',見出し)／文字列／runsリストの混在。
+    行幅を概算して折返し行数ぶん自動で送る（密な台帳でも重なり/はみ出しを防ぐ）。"""
+    s = slide()
+    text(s, 0.6, 0.34, 6.0, 0.26, "APPENDIX ・ 補足（本編では飛ばす｜QA用）", size=11, color=GOLD, bold=True)
+    text(s, 0.6, 0.62, 7.1, 0.52, f"AP{ap_no}　{title}", size=18, color=WH, bold=True,
+         anchor=MSO_ANCHOR.MIDDLE)
+    text(s, 7.0, 0.40, 2.4, 0.30, "0秒", size=10, color=DIM, bold=True,
+         align=PP_ALIGN.RIGHT, anchor=MSO_ANCHOR.MIDDLE)
+    rect(s, 0.6, 1.205, 8.8, 0.016, RULE)
+    card(s, 0.6, 1.34, 8.8, 3.82, shadow=False)
+    yy = 1.50
+    for ln in lines:
+        if isinstance(ln, tuple) and len(ln) == 2 and ln[0] == "H":
+            text(s, 0.84, yy+0.03, 8.4, 0.26, ln[1], size=11, color=CY, bold=True)
+            yy += 0.31
+        else:
+            body = [(ln, MUT, False, fsz)] if isinstance(ln, str) else list(ln)
+            raw = ln if isinstance(ln, str) else "".join(t[0] for t in ln)
+            runs = [("▸ ", GOLD, False, fsz)] + body
+            w = sum(1.0 if ord(c) > 0x2E80 else 0.55 for c in raw) + 2
+            nl = max(1, int((w + cpl - 1) // cpl))
+            text(s, 0.92, yy, 8.42, lh*nl, runs, size=fsz, color=MUT, line_spacing=1.04)
+            yy += lh*nl + 0.03
+    text(s, 0.6, 5.33, 7.6, 0.24, src or "", size=8, color=DIM)
+    text(s, 8.5, 5.33, 0.9, 0.24, f"AP{ap_no} / 9", size=9, color=DIM, align=PP_ALIGN.RIGHT)
+    return s
+
 # =====================================================================
 # S0 — BOSS APPEARS（つかみ・論破王FM登場 / HP 4/4）
 # =====================================================================
+set_theme("dark")
 s = slide(BG_COVER)
 text(s, 0.6, 0.40, 8.8, 0.28, "BOSS BATTLE ・ 本日の投資委員会", size=12, color=RED, bold=True)
 text(s, 0.6, 0.74, 9.0, 0.70, "ボスは「論破王」FM", size=40, color=WH, bold=True)
@@ -196,15 +246,92 @@ hp_gauge(s, 6.35, 4.66, 0, 4)
 footer(s, 0)
 
 # =====================================================================
-# S1 — 表紙＋投資テーゼ
+# A — アジェンダ（S0の次・プレゼンでは飛ばす＝0秒）／以降は白テーマ
 # =====================================================================
+set_theme("light")
+s = slide()
+header(s, "", "アジェンダ")
+# 端に小さく「プレゼンでは飛ばす（0秒）／詳細はAppendix」＝PDFで読む採点者向けの道筋ページ
+text(s, 5.4, 0.46, 4.0, 0.30, "プレゼンでは飛ばす（0秒）／詳細はAppendix", size=9.5, color=DIM, bold=True,
+     align=PP_ALIGN.RIGHT, anchor=MSO_ANCHOR.MIDDLE)
+keymsg(s, [("本日の論証は一本道＝「集中で勝つファンドが、なぜ今Solafuneに賭けるか」を、", WH, True),
+           ("①設計→②対象→③検算・論破→④決着", GOLD, True),
+           ("の順に全部数字で示す。", WH, True)])
+ag_items = [("①", "ファンド設計｜なぜ我々が・どう勝つか", "トラックレコード→勝ち筋→ファンド設計", "S1–S4"),
+            ("②", "投資対象｜なぜ今・なぜSolafune", "制度変化→OS→市場→競合→財務→Exit", "S5–S10"),
+            ("③", "検算・論破｜誇大/感想/倫理を撃破", "リターン検算→論破①②③→リスク", "S11–S15"),
+            ("④", "決着｜なぜ今・あなた達＝総回収", "投資判断（論破④で締める）", "S16")]
+yy = 2.18; rh = 0.62; gap = 0.10
+for num, label, sub, rng in ag_items:
+    card(s, 0.6, yy, 8.8, rh)
+    d = 0.42
+    oval(s, 0.84, yy+(rh-d)/2, d, d, CY)
+    text(s, 0.84, yy+(rh-d)/2, d, d, num, size=14, color="FFFFFF", bold=True,
+         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, 1.54, yy+0.08, 6.1, 0.30, label, size=13.5, color=WH, bold=True)
+    text(s, 1.54, yy+0.37, 6.1, 0.24, sub, size=9.5, color=MUT)
+    text(s, 7.9, yy, 1.3, rh, rng, size=12.5, color=GOLD, bold=True,
+         align=PP_ALIGN.RIGHT, anchor=MSO_ANCHOR.MIDDLE)
+    yy += rh + gap
+text(s, 0.6, 5.04, 8.8, 0.26,
+     "※複雑な導出・詳細データは Appendix（AP1〜9）に退避＝本編では飛ばし、QAで開く。",
+     size=9.5, color=DIM)
+
+# =====================================================================
+# A2 — エグゼクティブサマリー
+# =====================================================================
+s = slide()
+header(s, "", "エグゼクティブサマリー ＝ 逆算マップ")
+# 結論カード（先出し）
+card(s, 0.6, 1.34, 8.8, 0.56, fill=KMFILL, line=CARDLN, radius=0.06, shadow=False, line_w=0.75)
+rect(s, 0.6, 1.34, 0.07, 0.56, CY)
+text(s, 0.86, 1.34, 8.35, 0.56,
+     [("結論：3号150億から初回5.5億・持分約15%で、", WH, True), ("Solafune にリード投資する。", GOLD, True)],
+     size=13.5, color=WH, bold=True, anchor=MSO_ANCHOR.MIDDLE)
+# 逆算の予告ラベル
+text(s, 0.6, 1.98, 8.8, 0.26,
+     [("本日の証明は一本の逆算 ― 目標 DPI3.0X から各リンクが一意に決まる", WH, True, 11),
+      ("（数字下＝証明スライド）", MUT, False, 10)])
+# 逆算カスケード（6ノードを ← で連結＝目標から下流へ逆算／S12で閉じる）
+es_nodes = [("3.0X", "ネットDPI", "S12", PUR), ("¥206億", "1社FR", "S3·S12", GOLD),
+            ("¥1,717億", "Exit", "S10", GOLD), ("17倍", "EV/Sales", "S10", CY),
+            ("¥90億≒SOM", "必要売上=市場", "S7", CY), ("15→12%", "seed持分", "S4·S6", GOLD)]
+nx = 0.6; nbw = 1.28; ngap = 0.20; ny = 2.34; nch = 1.28
+for i, (big, lab, ref, c) in enumerate(es_nodes):
+    card(s, nx, ny, nbw, nch)
+    text(s, nx+0.04, ny+0.12, nbw-0.08, 0.44, big, size=13, color=c, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, nx+0.04, ny+0.58, nbw-0.08, 0.36, lab, size=8.7, color=MUT, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.0)
+    text(s, nx+0.04, ny+0.98, nbw-0.08, 0.24, ref, size=8.5, color=CY, bold=True, align=PP_ALIGN.CENTER)
+    if i < len(es_nodes)-1:
+        text(s, nx+nbw, ny, ngap, nch, "←", size=15, color=DIM, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    nx += nbw + ngap
+# 3つの「なぜ」（鎖を成立させる前提）
+es_rows = [("なぜ今", "2026年の輸出緩和・調達ファストパス・前払いで参入条件が構造変化"),
+           ("なぜ我々", [[("・宇宙VCを2回運用した実績（目利き）", WH, False, 8.8)],
+                        [("・取締役・120カ国網・政府パイプで一緒に伸ばす", WH, False, 8.8)]]),
+           ("なぜSolafune", "衛星を持たない解析特化＝二桁持分を保てる希少企業（FR候補）")]
+ex = 0.6; ecw = 2.86; egap = 0.11
+for lbl, desc in es_rows:
+    card(s, ex, 3.78, ecw, 0.76)
+    text(s, ex+0.16, 3.84, ecw-0.32, 0.26, lbl, size=11.5, color=CY, bold=True)
+    text(s, ex+0.16, 4.12, ecw-0.32, 0.42, desc, size=8.8, color=WH, line_spacing=1.04)
+    ex += ecw + egap
+text(s, 0.6, 4.70, 8.8, 0.30,
+     [("この鎖を8分で1リンクずつ実数で証明し、", MUT, False, 10.5),
+      ("S12で閉じる（答え合わせ）", GOLD, True, 10.5),
+      ("。残リスクは契約条項で先回り。", MUT, False, 10.5)])
+
+# =====================================================================
+# S1 — 表紙＋投資テーゼ（ES の後・本編の扉）
+# =====================================================================
+set_theme("dark")
 s = slide(BG_COVER)
 text(s, 0.6, 0.50, 8.0, 0.30, "VC FUND PITCH ・ 投資テーゼ", size=12, color=CY, bold=True)
 text(s, 0.6, 1.05, 9.0, 0.85, "SENTINEL CAPITAL", size=44, color=WH, bold=True)
 text(s, 0.6, 1.78, 9.0, 0.70, "PARTNERS  ×  Solafune", size=30, color=CY, bold=True)
 keymsg(s, [("3号150億から初回5.5億・エントリー持分約15%で、", WH, True),
-           ("Solafuneにリード投資する。", GOLD, True)], y=2.66, h=0.60)
-text(s, 0.6, 3.50, 8.9, 0.66,
+           ("Solafuneにリード投資する。", GOLD, True)], y=2.58, h=0.58)
+text(s, 0.6, 3.40, 8.9, 0.62,
      [("テーゼ：衛星を持たない", MUT, False, 13),
       ("「Planetary Intelligence OS」＝解析・意思決定レイヤー特化", WH, True, 13),
       ("の希少な日本のデュアルユース・ソフト企業。", MUT, False, 13)], line_spacing=1.15)
@@ -212,14 +339,19 @@ text(s, 0.6, 3.50, 8.9, 0.66,
 badges = [("3号 ¥150億", CY), ("集中 10–12社", GOLD), ("ネットDPI 3.0X", PUR)]
 x = 0.6
 for b, c in badges:
-    card(s, x, 4.38, 2.55, 0.62, radius=0.16)
-    text(s, x, 4.38, 2.55, 0.62, b, size=15, color=c, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    card(s, x, 4.20, 2.55, 0.58, radius=0.16)
+    text(s, x, 4.20, 2.55, 0.58, b, size=15, color=c, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
     x += 2.73
-footer(s, 1)
+# 運用主体（誰が運用するか＝設定を最初に明記／評価基準①）
+text(s, 0.6, 4.92, 8.9, 0.32,
+     [("運用：Sentinel Capital Partners｜経済安保特化GP", WH, True, 10),
+      ("（宇宙2号運用＋安保クリアランス・防衛/商社オペレーティングパートナー）", MUT, False, 9.5)])
+footer(s, 1, "→詳細：S3・AP9（FR4条件・チーム/付加価値）")
 
 # =====================================================================
-# S2 — なぜ私たち（トラックレコード）
+# S2 — なぜ私たち（トラックレコード）／以降は白テーマ
 # =====================================================================
+set_theme("light")
 s = slide()
 header(s, "WHY US ・ なぜ私たち", "なぜ私たちなのか ― 宇宙で2度、結果を出した")
 keymsg(s, [("1号 2.0X → 2号 1.5X。", WH, True),
@@ -242,7 +374,7 @@ text(s, 0.86, 4.46, 8.3, 0.62,
      [("ボス：「2号で下がってるじゃないですか」　", RED, True, 12),
       ("→ はい。だから分散をやめ、集中に振り切った。痛みを戦略に変えました。", WH, True, 12)],
      anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 2)
+footer(s, 2, "→詳細：AP9（1号2号の中身・ソーシング機構・“人の流れ”思想）")
 
 # =====================================================================
 # S3 — 勝ち筋（べき乗則＋FR定義＋我々の付加価値）
@@ -280,7 +412,7 @@ text(s, 0.86, 4.74, 8.3, 0.50,
      [("我々の付加価値（＝当たり馬を勝たせる）：", GOLD, True, 10.5),
       ("取締役就任／120カ国コミュニティ／政府リレーション／フォローオン　＝", WH, True, 10.5),
       ("起業家>投資家で伴走", CY, True, 10.5)], anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 3)
+footer(s, 3, "→詳細：AP9（FR4条件・付加価値4点・deal access4点の根拠）")
 
 # =====================================================================
 # S4 — ファンド設計（件数／チケット／持分／算数）
@@ -303,7 +435,7 @@ text(s, 0.86, 4.82, 8.3, 0.52,
       ("。持分はチケット増でなくPre交渉で確保。チーム ", MUT, False, 12),
       ("GP2＋アソシ2＋クリアランス保持", WH, True, 12),
       ("＝件数の天井10〜12社。", MUT, False, 12)], anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 4)
+footer(s, 4, "→詳細：AP4（LP構成40/30/30の合意ロジック・件数算術・Pre逆算）")
 
 # =====================================================================
 # S5 — なぜ今（制度変化）
@@ -331,7 +463,7 @@ text(s, 0.86, 4.46, 8.3, 0.62,
      [("ボス：「日本は輸出できないでしょ」　", RED, True, 12),
       ("→ 2026年4月に変わりました。戦闘中の国は除外、歯止めとセットです。", WH, True, 12)],
      anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 5, "出典：防衛省・宇宙戦略基金（01前提パック §4・§6）")
+footer(s, 5, "出典：01前提パック §6 ／ →詳細：AP6（公的需要プールの金額：防衛費8.7兆／PFI2,831億／基金1兆 ほか）")
 
 # =====================================================================
 # S6 — Solafuneとは（Planetary Intelligence OS・moat）
@@ -348,8 +480,8 @@ for t, d in srcs:
     text(s, 0.8, yy+0.36, 1.9, 0.24, d, size=9.5, color=MUT)
     yy += 0.74
 card(s, 3.15, 2.34, 1.95, 1.78, fill="0E2A52", line=CY, radius=0.5)
-text(s, 3.15, 2.56, 1.95, 0.40, "Intelligence", size=13, color=WH, bold=True, align=PP_ALIGN.CENTER)
-text(s, 3.15, 2.96, 1.95, 0.40, "OS", size=20, color=CY, bold=True, align=PP_ALIGN.CENTER)
+text(s, 3.15, 2.56, 1.95, 0.40, "Intelligence", size=13, color="EAF1FF", bold=True, align=PP_ALIGN.CENTER)
+text(s, 3.15, 2.96, 1.95, 0.40, "OS", size=20, color="5BC8FF", bold=True, align=PP_ALIGN.CENTER)
 uses = ["重要鉱物の探査・違法採掘モニタリング（SHIGEN AI）",
         "防衛省・警察庁・内閣府 ＋ アフリカ諸国・国連機関",
         "120カ国超の開発者コミュニティが解析を供給"]
@@ -363,7 +495,7 @@ card(s, 0.6, 4.50, 8.8, 0.56, fill=KMFILL, line=None, radius=0.12, shadow=False)
 text(s, 0.86, 4.50, 8.3, 0.56,
      [("moat：", CY, True, 10.5), ("①センサー非依存のマルチソース解析　②120カ国コミュニティ　③政府・国際機関リレーション　④自然言語UI", WH, False, 10.5),
       ("　→ 資本効率高く二桁持分を保ちやすい", MUT, False, 10.5)], anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 6)
+footer(s, 6, "→詳細：AP5（moat4点の反証条件・受注/MoU実績）")
 
 # =====================================================================
 # S7 — 市場（TAM/SAM/SOM・ボトムアップ）
@@ -396,7 +528,7 @@ text(s, 0.86, 4.40, 8.3, 0.62,
       (" → 2032年 ", MUT, False, 12), ("101億/46件", GOLD, True, 12),
       ("。シェア仮定なし、単価×件数の積み上げ［C転換率が最も要実証］", MUT, False, 11)],
      anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 7, "出典：01前提パック §2-3（ボトムアップ積算）")
+footer(s, 7, "出典：01前提パック §2-3 ／ →詳細：AP2（TAMレイヤー・SAM充当率・SOM5セグメント表・感度81〜121億）")
 
 # =====================================================================
 # S8 — 競争構造とポジショニング
@@ -422,7 +554,7 @@ text(s, 0.86, 4.58, 8.3, 0.48,
      [("Anduril「生産そのものに価値はない」＝", MUT, False, 11),
       ("Solafuneはその解析層に日本政府アンカーで先行（→論破④で回収）", WH, True, 11)],
      anchor=MSO_ANCHOR.MIDDLE)
-footer(s, 8)
+footer(s, 8, "→詳細：AP1（グローバル/国内compsの評価額・倍率一覧）")
 
 # =====================================================================
 # S9 — 財務（5年売上・GM）
@@ -451,7 +583,7 @@ for b, c, l in rights:
     text(s, 6.75, yy+0.08, 2.5, 0.44, b, size=19, color=c, bold=True, anchor=MSO_ANCHOR.MIDDLE)
     text(s, 6.77, yy+0.54, 2.5, 0.30, l, size=9.7, color=MUT)
     yy += 0.99
-footer(s, 9, "出典：02財務モデル.xlsx（PL/前提シート）")
+footer(s, 9, "出典：02財務モデル（PL/前提シート） ／ →詳細：AP2（売上セグメント内訳）")
 
 # =====================================================================
 # S10 — バリュエーション＆Exit（comps・1,717億）
@@ -481,7 +613,7 @@ card(s, 6.35, 3.50, 3.05, 1.55, fill=KMFILL, line=GOLD)
 text(s, 6.58, 3.66, 2.6, 0.30, "ファンドリターナー成立", size=11.5, color=GOLD, bold=True)
 text(s, 6.58, 4.02, 2.6, 0.5, [("¥206億", WH, True, 22), (" ÷ ¥150億", MUT, False, 12)], anchor=MSO_ANCHOR.MIDDLE)
 text(s, 6.58, 4.56, 2.7, 0.40, [("＝ 対ファンド ", MUT, False, 11), ("1.37X", CY, True, 13), ("／総コミMOIC ", MUT, False, 11), ("12.5X", GOLD, True, 13)], line_spacing=1.0)
-footer(s, 10, "出典：01前提パック §5・02財務モデル Exit/リターン")
+footer(s, 10, "出典：01 §5・02 ／ →詳細：AP1（採用群5社の倍率・統計・要因分解+3/+2/+2・バブル除外根拠）")
 
 # =====================================================================
 # S11 — 論破②「EV/Sales 17倍＝感想ですよね？」（HP4→3）
@@ -493,15 +625,17 @@ rebuttal(11, 1, "論破② ・ DEBUNK ROUND 1（感想）",
     [[("● 採用群 {Planet6・Synspective7・BlackSky10・Anduril14・Palantirプレ20} → 中央値10倍", MUT, False, 11.5)],
      [("● 上乗せ+7倍＝ソフト比率+3／粗利優位+2／主権的信認+2 ＝ ", MUT, False, 11.5), ("17倍", GOLD, True, 11.5)],
      [("● Palantir現況60.7倍はバブル局面として明示除外（だから保守でも15〜18倍）", MUT, False, 11.5)],
-     [("● 中央値10倍まで縮んでも、1社で元本の約8割を回収＝壊れない", DIM, False, 11)]])
+     [("● 中央値10倍まで縮んでも、1社で元本の約8割を回収＝壊れない", DIM, False, 11)]],
+    src="→詳細：AP1（採用群5社・要因分解+3/+2/+2・感度12〜20倍）")
 
 # =====================================================================
 # S12 — リターン＆ファンドリターナー検算＆感度
 # =====================================================================
 s = slide()
-header(s, "RETURN ・ リターン検算", "Solafune206億 ＝ 元手のほぼ1本ぶん")
-keymsg(s, [("Solafune1社で元手をほぼ回収（＝唯一のFR）。", WH, True),
-           ("ネット3.0Xは10社のべき乗則で積む（上位2社で約65%）", GOLD, True)])
+header(s, "RETURN ・ 逆算カスケード回収", "逆算が閉じる ― Solafune206億で回収")
+keymsg(s, [("ESの逆算がここで閉じる ＝ ", WH, True),
+           ("3.0X←206億←1,717億←17倍←売上101億≒SOM←seed15%", GOLD, True),
+           ("（飛躍ゼロ）", WH, True)])
 # big number left
 card(s, 0.6, 2.18, 3.05, 1.95, fill=KMFILL, line=GOLD)
 text(s, 0.8, 2.46, 2.7, 0.70, "¥206億", size=34, color=WH, bold=True, anchor=MSO_ANCHOR.MIDDLE)
@@ -509,9 +643,9 @@ text(s, 0.8, 3.34, 2.7, 0.60, [("総コミット16.5億→", MUT, False, 10.5), 
      ("／対ファンド ", MUT, False, 10.5), ("1.37X", CY, True, 11)], line_spacing=1.1)
 # distribution rows right
 rows = [("Solafune", "★唯一のFR（突出1本）", "206", GOLD),
-        ("Humanity Brain", "勝ち馬B：実在候補7-8X（→論破③）", "136", CY),
-        ("C・D", "3-5X級 2社", "119", MUT),
-        ("E-J", "1-2X〜0-1X級 6社", "63", DIM)]
+        ("Humanity Brain", "勝ち馬B：実在候補8X（→論破③）", "136", CY),
+        ("C", "中堅勝ち4.9X → ここで崖", "84", MUT),
+        ("D–J", "2X以下に急減・大半0-1Xの薄い裾7社", "98", DIM)]
 yy = 2.18
 for name, tier, rec, c in rows:
     card(s, 3.85, yy, 5.55, 0.50)
@@ -528,7 +662,7 @@ for b, l, c in trio:
     text(s, x+0.18, 4.50, 2.5, 0.40, b, size=17, color=c, bold=True, anchor=MSO_ANCHOR.MIDDLE)
     text(s, x+0.18, 4.88, 2.5, 0.24, l, size=9.5, color=MUT)
     x += 2.93
-footer(s, 12, "出典：02財務モデル「ポートフォリオ」シート（net DPI 2.995≈3.0X）／感度：持分10%↑×EV/Sales15倍↑で150億超")
+footer(s, 12, "出典：02「ポートフォリオ」(net DPI≈3.0X) ／ →詳細：AP3（10社分布の崖・各社MOIC・感度4ケース）")
 
 # =====================================================================
 # S13 — 論破①「1.37XでFRは盛りすぎ？」（HP3→2）
@@ -536,11 +670,12 @@ footer(s, 12, "出典：02財務モデル「ポートフォリオ」シート（
 rebuttal(13, 2, "論破① ・ DEBUNK ROUND 2（誇大）",
     "「1.37Xで“ファンドリターナー”は盛りすぎでは？」",
     "1.37Xって全然3.0Xに足りてないですよね？",
-    [("別レイヤーの話です。", WH, True), ("1.37Xは“対ファンド比”、この1社のMOICは12.5X。", GOLD, True), ("盛ってない、定義です。", WH, True)],
-    [[("● ファンドリターナー＝1社で元手150億をほぼ1本ぶん回収＝ポジション206億／ファンド150億＝1.37X", MUT, False, 11.5)],
-     [("● 同じ1社を“投じた額”で見れば：206億 ÷ 総コミット16.5億 ＝ ", MUT, False, 11.5), ("MOIC 12.5X", GOLD, True, 11.5)],
-     [("● 全体3.0Xは別物：10社のべき乗則（上位2社で回収の約65%）で積む", MUT, False, 11.5)],
-     [("● DPI＝財布全体が何倍／MOIC＝この1社が何倍。混ぜると誤読します", DIM, False, 11)]])
+    [("別レイヤー＋鎖で返す。", WH, True), ("1.37Xは対ファンド比・MOIC12.5X、S12の逆算に飛躍ゼロ。", GOLD, True), ("どこが飛躍か挙げて。", WH, True)],
+    [[("● ファンドリターナー＝1社で元手150億をほぼ1本ぶん回収＝206億／150億＝1.37X（対ファンド比）", MUT, False, 11.5)],
+     [("● 投じた額で見れば：206億 ÷ 総コミット16.5億 ＝ ", MUT, False, 11.5), ("MOIC 12.5X", GOLD, True, 11.5), ("／全体3.0Xは10社分布で別途", MUT, False, 11.5)],
+     [("● “全体が盛り”なら、S12で閉じた逆算の鎖のどこかが切れる＝DPI3.0X←206億←1,717億←17倍←101億は飛躍ゼロ", MUT, False, 11.5)],
+     [("● だから問い返す：", DIM, False, 11), ("「どこが飛躍か、1つ挙げてください」", WH, True, 11.5), ("──挙がらなければ、盛りではなく定義です", DIM, False, 11)]],
+    src="→詳細：AP3（対ファンド1.37X／対投資額MOIC12.5X／全体ネット3.0Xの3層＋逆算カスケード）")
 
 # =====================================================================
 # S14 — 論破③「Humanity Brain＝世論操作？」（HP2→1）
@@ -553,7 +688,7 @@ rebuttal(14, 3, "論破③ ・ DEBUNK ROUND 3（倫理）",
      [("● 線引き：対象国の認知“操作”ではなく、自国の認知“防衛”＝誤情報への耐性に用途限定", MUT, False, 11.5)],
      [("● 投資契約に influence-ops の攻撃的利用禁止コベナンツ＋第三国移転制限", MUT, False, 11.5)],
      [("● Solafune（物理GEOINT）の隣＝認知ドメインの解析層。守る側です", DIM, False, 11)]],
-    src="※前回ボスが唯一刺したESGの穴を、ここで塞ぐ")
+    src="※前回唯一刺さったESGを塞ぐ ／ →詳細：AP7（用途限定・契約コベナンツ）")
 
 # =====================================================================
 # S15 — リスクと反論への備え
@@ -571,11 +706,12 @@ for (px, py), (t, d) in zip(pos, risks):
     card(s, px, py, 4.30, 1.34)
     text(s, px+0.24, py+0.16, 3.9, 0.36, [("⚠ ", GOLD, True, 13), (t, WH, True, 13.5)])
     text(s, px+0.24, py+0.62, 3.85, 0.62, d, size=11, color=MUT, line_spacing=1.12)
-footer(s, 15)
+footer(s, 15, "→詳細：AP8（リスク×緩和の全表・既知の弱点a〜e）")
 
 # =====================================================================
 # S16 — 決着（論破④なぜ今あなた達＝総回収・投資判断 / HP1→0）
 # =====================================================================
+set_theme("dark")
 s = slide(BG_COVER)
 text(s, 0.6, 0.42, 9.0, 0.30, "FINISH ・ 決着（論破④：なぜ今・あなた達）", size=12, color=RED, bold=True)
 text(s, 0.6, 0.86, 9.0, 0.66, "論破ポイント、全部塞ぎました", size=33, color=WH, bold=True)
@@ -596,6 +732,108 @@ text(s, 0.86, 3.88, 8.3, 0.30, [("次アクション：", MUT, False, 11), ("シ
 text(s, 0.6, 4.50, 9.0, 0.40, [("「……で、論破できました？」　", RED, True, 13), ("地球を読む者が、次の安全保障を制する。", CY, True, 14)])
 text(s, 0.6, 5.06, 9.0, 0.28, "ご清聴ありがとうございました", size=10.5, color=DIM)
 footer(s, 16)
+
+# =====================================================================
+# Appendix（AP1〜9・補足/QA用・本編では飛ばす・各0秒）／白テーマ
+#   本編ボディ末尾の「→詳細：APx」から開く。フル台帳（数値・導出・出典・仮印）はここ。
+# =====================================================================
+set_theme("light")
+
+appendix(1, "comps・EV/Sales 17倍の導出", [
+    ("H", "採用comps群（バブル除外・フォワード基準）"),
+    "Palantirプレ局面20倍／Anduril14倍（$61B÷2026予想$4.3B）／BlackSky10倍／Synspective7倍／Planet6倍",
+    [("→ ", CY, True, 9.5), ("中央値10倍・平均11.4倍・レンジ6〜20倍", WH, True, 9.5)],
+    ("H", "採用17倍の導出（中央値10→17＝+7）と除外"),
+    "要因分解＝ソフト比率+3／粗利優位+2／主権的信認+2（主権だけで1.7倍ではない）",
+    "バブル除外：Palantir現況60.7倍（歴史的中央値25倍を143%超）・Planet現況29倍（宇宙ラリー）",
+    "剥落リスク：トレーリングPSR7.1倍→フォワード約2.7倍（Synspective例）／持続性は感度12〜20倍で吸収",
+    ("H", "comps評価額一覧"),
+    "Palantir約3,060〜3,080億$・60.7倍／Anduril$61B／Helsing$18B／Shield AI$12.7B",
+    "国内：Synspective約1,700億（1社1,500億Exit実証）／iQPS約1,216億／Axelspace2025/8上場／防衛テックVC2025＝491億$",
+], src="出典：01前提パック §4・§5（S8・S10・S11の裏付け）")
+
+appendix(2, "市場ボトムアップ（TAM／SAM／SOM内訳）", [
+    ("H", "TAM（レイヤー別）"),
+    "GeoAI 371→629億$（CAGR11.1%）／防衛地理空間1,503→2,821億$／地理空間アナリティクス1,143→2,265億$",
+    ("H", "SAM＝年約170億（公的予算×解析ソフト充当率8〜15%［想定］）"),
+    "PFI(405×8%)≈32＋宇宙基金(200×15%)≈30＋防衛AI(500×10%)≈50＋経済安保(300×10%)≈30＋その他官庁(200×15%)≈30",
+    ("H", "SOM 5セグメント（誰に・いくらで・何件｜2030→2032）"),
+    "A 日本政府 2.5億/件 → 12件30億 → 14件35億",
+    "B 宇宙基金 3億/件 → 5件15億 → 6件18億　／　C 同志国MoU 1.5億/件 → 4件6億 → 6件9億（2026/4輸出緩和が追い風）",
+    "D 経済安保 2億/件 → 7件14億 → 9件18億　／　E 民間 2億/件 → 10件20億 → 11件21億",
+    [("計＝", MUT, False, 9.5), ("38件85億（2030）→ 46件101億（2032）", GOLD, True, 9.5),
+     ("。確度 A＞B/D＞C（有償実績ゼロ＝最優先で実証）／感度 81〜121億（中心101）", MUT, False, 9.5)],
+], src="出典：01前提パック §2・§6（S7・S9の裏付け）")
+
+appendix(3, "リターン分布（power-law 10社）＆感度", [
+    ("H", "10社のべき乗則分布（リザーブは勝ち馬に集中・下位3社は初回チケットのみ）"),
+    "Solafune206億(12.5X)＋HB136億(8X)＋中堅C84億(4.9X) →【明確な崖】→ 44億(2.8X)＋26億(1.7X)＋16億(1.2X)＋0-1X〜全損4社",
+    [("→ 投下約123億 → グロス回収約524億 → グロス4.3X → ", MUT, False, 9.5),
+     ("ネットDPI約3.0X", GOLD, True, 9.5), ("（上位2社で回収の約65%）", MUT, False, 9.5)],
+    ("H", "3つの倍率（混同が誤読の正体）"),
+    "対ファンド1.37X（206/150）／対投資額MOIC12.5X（206/16.5）／全体ネット3.0X",
+    ("H", "感度4ケース（保守域 ≥15倍 & ≥10% で安定して○）"),
+    "①17×12%=206億○(+37%)　②15×11%=167億○(+11%)　③15×10%=151億○(+1%)　④12×8%=97億×(−35%)",
+    "×は④同時悪化のみ＝Exit後ろ倒し(2034)で吸収／勝ち馬B＝Humanity Brain＝防衛装備庁「社会シミュレーション」採択［要検証］",
+], src="出典：02財務モデル（ポートフォリオ/リターン）・01 §1（S12・S13の裏付け）")
+
+appendix(4, "ファンド設計詳細（LP構成・件数算術）", [
+    ("H", "LP構成 40/30/30 の合意ロジック［設計値］"),
+    "事業会社40%（事業理解）→集中13%を許容／年金・大学30%（超長期）→運用10年+2・Exit後ろ倒しを許容",
+    "金融機関30%（規律）→13%を上限にキャップ",
+    [("→ ", CY, True, 9.5), ("集中度・期間はGP願望でなくLP合意済みの制約", WH, True, 9.5)],
+    ("H", "件数算術・Pre逆算"),
+    "GP1人が深く関与できるのは5社未満＝GP2で約10社／投資可能125億÷(チケット5.5＋リザーブ厚め)≒10〜11社",
+    "Pre31＋初回5.5＝Post36.5、5.5/36.5＝15.1%（pre/postは非開示ゆえファンド想定からの逆算）",
+], src="出典：01前提パック §0・§0-1・§8（S4の裏付け）")
+
+appendix(5, "Solafune moat反証＆受注実績", [
+    ("H", "moat4点＋反証条件"),
+    "①センサー非依存のマルチソース解析（反証：ハード内製化／Palantir日本参入）",
+    "②120カ国コミュニティ（反証：収益化せず）／③政府・国際機関リレーション（反証：スポット止まり）",
+    "④自然言語UI Shigenbot（反証：汎用LLM+GISで模倣可能になれば薄れる）",
+    ("H", "受注・MoU実績"),
+    "防衛省（2024/9＋2026/1 AI2件）・内閣府・警察庁受注",
+    "UNIDO $5.34M（コンゴ民SGN-C MoU）・セネガル/エジプト/ガーナ展開／UNDP掲載のSHIGEN AI・ShigenBot",
+], src="出典：01前提パック §3・§8、inputs/Solafune調査.md（S6の裏付け）")
+
+appendix(6, "公的需要プール（金額）と制度改革", [
+    ("H", "公的需要プール（金額）"),
+    "防衛費2025年度8.7兆円（2026案8.8兆＝再編込み9兆353億）／衛星コンステPFI約2,831億（2026-2031・7社落札）",
+    "宇宙戦略基金10年総額1兆円／経済安保SC強靱化（令和4＝1兆358億・令和5＝9,172億・令和6＝2,300億）",
+    "日米重要鉱物アクションプラン（2026/3発出）／安保技術研究推進制度 3億(2015)→約110億",
+    ("H", "制度改革3点（2026）"),
+    "①輸出緩和（2026/4/21・協定国へ移転可・戦闘中の国は除外）②ファストパス調達（約3.5か月）③前払い・部分払い",
+], src="出典：01前提パック §6・§8（S5の裏付け）")
+
+appendix(7, "ESG・契約コベナンツ詳細", [
+    ("H", "用途限定（Humanity Brain）"),
+    "認知「防衛」（誤情報耐性）に限定＝対象国の認知「操作」ではない",
+    "位置づけ＝Solafune（物理GEOINT）隣の認知ドメイン解析層＝べき乗則の勝ち馬B（7-8X級）",
+    ("H", "投資契約コベナンツ"),
+    "influence-ops攻撃的利用禁止＋第三国移転制限＋LAWS非関与・輸出管理遵守・データ主権",
+    "年金・大学基金LPのガバナンス要件とも整合",
+], src="出典：01前提パック §3・§7・§0-1（S14・S15の裏付け）")
+
+appendix(8, "リスク×緩和の全表＆既知の弱点", [
+    ("H", "リスク×緩和策（全リスト）"),
+    "①政府依存・調達サイクル → マイルストン連動トランシェ＋同志国・民間へ需要分散",
+    "②チケット不整合（実シード2億 vs 想定5.5億）→ シード〜プレA単独リード拡大で再設計（post36.5/15%）",
+    "③出口不確実性（バブル持続性＝Rheinmetall CEO警告）→ Exit後ろ倒し(2034)＋国内プライム/商社M&A併行",
+    "④競争・人材 → マルチソース解析＋主権的信認＋120カ国コミュニティの採用ファネル",
+    ("H", "既知の弱点（QA頻出）"),
+    "a 実シード2億vs5.5億／b 倍率持続性／c Post-Val交渉の蓋然性／d 政府依存／e 1社集中",
+], src="出典：01前提パック §7、STATUS §5（S15の裏付け）")
+
+appendix(9, "チーム・付加価値・deal access詳細", [
+    ("H", "チーム（「宇宙×防衛×資源」の当事者）"),
+    "宇宙VC1号（裾野・部品/データ）2.0X／2号（宇宙データ・解析）1.5X",
+    "安保クリアランス保持・防衛装備庁・国際機関（UNIDO/UNDP）・資源商社OBのオペレーティングパートナー（設計値）",
+    ("H", "付加価値4点（勝たせる）／deal access4点（入れてもらえる）"),
+    "付加価値：①取締役就任②120カ国コミュニティ接続③防衛装備庁・国際機関で政府アンカー受注④リザーブ55%フォローオン",
+    "deal access：①クリアランス取締役＋防衛装備庁で政府アンカー後押し②国産GP＝主権調達適格（外資不可）③商社OBで販路・M&A買い手④フォローオンで資本確実性",
+    [("load-bearing：", RED, True, 9.5), ("崩れるとS4持分15%・S12の206億/1.37Xが崩れる＝リターン論の前提", WH, True, 9.5)],
+], src="出典：01前提パック §0・§1（S1・S2・S3の裏付け）")
 
 prs.save(OUT)
 print("saved:", OUT, "slides:", len(prs.slides._sldIdLst))
